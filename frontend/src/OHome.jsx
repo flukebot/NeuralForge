@@ -1,8 +1,9 @@
 import React from "react";
-import { Box, Button, Text, Flex, Image } from "@chakra-ui/react";
+import { Box, Button, Text, Flex, Image, Stack } from "@chakra-ui/react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import backgroundImage from "./assets/images/bgnf.jpg";
 import logo from "./assets/images/neuralforge.png";
+import OSound from "./sound/OSound";
 
 
 // Define your components for different routes here
@@ -39,7 +40,7 @@ class OHome extends React.Component {
               <Box position="relative" zIndex="1" paddingBottom="100px">
                 <Routes>
                   <Route path="/" element={<Home />} />
-                  <Route path="/project" element={<AboutMe />} />
+                  <Route path="/sound" element={<OSound />} />
                   {/* Add more routes as needed */}
                 </Routes>
               </Box>
@@ -66,9 +67,9 @@ class OHome extends React.Component {
                     }}
                   />
                 </Link>
-                <Link to="/project">
+                <Link to="/sound">
                   <Button colorScheme="teal" variant="outline" mr="4">
-                    Project
+                  Sound
                   </Button>
                 </Link>
               </Flex>
