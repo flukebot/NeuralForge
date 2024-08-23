@@ -14,10 +14,13 @@ import (
     "github.com/wailsapp/wails/v2/pkg/options/assetserver"
     "github.com/wailsapp/wails/v2/pkg/runtime"
     "github.com/gofiber/fiber/v2/middleware/filesystem"
+    //"github.com/gofiber/fiber/v2/middleware/proxy"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
+// Declare fiberApp globally so it can be used across functions
+var fiberApp *fiber.App
 
 func main() {
     // Load .env file if it exists
@@ -32,8 +35,10 @@ func main() {
     serverMode := os.Getenv("SERVER_MODE")
     devMode := os.Getenv("DEV_MODE")
     if serverMode == "true" {
+        fiberApp = fiber.New()
         fmt.Println("Running server mode")
         if devMode == "true" {
+            
             go runServerMode(app)
         } else {
             runServerMode(app)
@@ -43,9 +48,10 @@ func main() {
     runDesktopMode(app)
 }
 
-func runServerMode(app *App) {
-    fiberApp := fiber.New()
 
+
+func runServerMode(app *App) {
+    
     // Serve the React frontend from the embedded assets
     fiberApp.Use("/", filesystem.New(filesystem.Config{
         Root:       http.FS(assets), // Serve embedded assets
