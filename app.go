@@ -79,6 +79,7 @@ func (a *App) ListProjects() ([]string, error) {
     return projectNames, nil
 }
 
+
 func (a *App) CreateProject(projectName string) (string, error) {
     homeDir, err := os.UserHomeDir()
     if err != nil {

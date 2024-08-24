@@ -15,6 +15,7 @@ import (
     "github.com/wailsapp/wails/v2/pkg/runtime"
     "github.com/gofiber/fiber/v2/middleware/filesystem"
     //"github.com/gofiber/fiber/v2/middleware/proxy"
+    "github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 //go:embed all:frontend/dist
@@ -36,6 +37,14 @@ func main() {
     //devMode := os.Getenv("DEV_MODE")
     if serverMode == "true" {
         fiberApp = fiber.New()
+
+
+        // Enable CORS for all routes and origins
+        fiberApp.Use(cors.New(cors.Config{
+            AllowOrigins: "*", // Allow all origins
+            AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+        }))
+
         fmt.Println("Running server mode")
         runServerMode(app)
     }
@@ -110,31 +119,44 @@ func runDesktopMode(app *App) {
 }
 
 func setupRoutes(fiberApp *fiber.App, appLogic *App) {
+    // Greet route
     fiberApp.Get("/api/greet/:name", func(c *fiber.Ctx) error {
         name := c.Params("name")
-        return c.SendString(appLogic.Greet(name))
+        if name == "" {
+            return c.Status(400).SendString("Name parameter is required")
+        }
+        greeting := appLogic.Greet(name)
+        return c.Status(200).SendString(greeting) // Send 200 status for success
     })
 
+    // List projects route
     fiberApp.Get("/api/list-projects", func(c *fiber.Ctx) error {
         projects, err := appLogic.ListProjects()
         if err != nil {
-            return c.Status(500).SendString(err.Error())
+            return c.Status(500).SendString("Failed to list projects: " + err.Error())
         }
-        return c.JSON(projects)
+        if len(projects) == 0 {
+            return c.Status(204).JSON([]string{}) // Send 204 No Content if no projects found
+        }
+        return c.Status(200).JSON(projects) // Send 200 status for success with project list
     })
 
+    // Create project route
     fiberApp.Post("/api/create-project", func(c *fiber.Ctx) error {
         var body struct {
             ProjectName string `json:"projectName"`
         }
         if err := c.BodyParser(&body); err != nil {
-            return c.Status(400).SendString(err.Error())
+            return c.Status(400).SendString("Invalid request body: " + err.Error())
+        }
+        if body.ProjectName == "" {
+            return c.Status(400).SendString("ProjectName is required")
         }
         projectDir, err := appLogic.CreateProject(body.ProjectName)
         if err != nil {
-            return c.Status(500).SendString(err.Error())
+            return c.Status(500).SendString("Failed to create project: " + err.Error())
         }
-        return c.SendString(projectDir)
+        return c.Status(201).SendString(projectDir) // Send 201 status for successful creation
     })
 
     // Add more routes as needed
