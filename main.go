@@ -1,21 +1,22 @@
 package main
 
 import (
-    "embed"
-    "fmt"
-    "os"
-    "context"
-    "log"
-    "net/http" // Add this import
-    "github.com/gofiber/fiber/v2"
-    "github.com/joho/godotenv"
-    "github.com/wailsapp/wails/v2"
-    "github.com/wailsapp/wails/v2/pkg/options"
-    "github.com/wailsapp/wails/v2/pkg/options/assetserver"
-    "github.com/wailsapp/wails/v2/pkg/runtime"
-    "github.com/gofiber/fiber/v2/middleware/filesystem"
-    //"github.com/gofiber/fiber/v2/middleware/proxy"
-    "github.com/gofiber/fiber/v2/middleware/cors"
+	"embed"
+	"fmt"
+	"log"
+	"net/http" // Add this import
+	"os"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/joho/godotenv"
+	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
+
+	//"github.com/gofiber/fiber/v2/middleware/proxy"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 //go:embed all:frontend/dist
@@ -103,13 +104,13 @@ func runDesktopMode(app *App) {
         },
         //StartHidden:       true, // Keep the window hidden on startup
         //HideWindowOnClose: true, // Hide the window instead of closing
-        OnDomReady: func(ctx context.Context) {
+        /*OnDomReady: func(ctx context.Context) {
             // Logic to execute when the DOM is ready
         },
         OnBeforeClose: func(ctx context.Context) (prevent bool) {
             runtime.WindowHide(ctx) // Use Wails' runtime to hide the window
             return true // Prevent the window from closing
-        },
+        },*/
     })
 
     if err != nil {

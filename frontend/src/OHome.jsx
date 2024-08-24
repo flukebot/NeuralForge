@@ -1,14 +1,24 @@
 import React from "react";
-import { Box, Button, Text, Flex, Image, Stack } from "@chakra-ui/react";
+import { Box, Button, Text, Flex, Image, Heading } from "@chakra-ui/react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import backgroundImage from "./assets/images/bgnf.jpg";
 import logo from "./assets/images/neuralforge.png";
 import OSound from "./sound/OSound";
 
-
 // Define your components for different routes here
 const Home = () => <Text>Home Page</Text>;
 const AboutMe = () => <Text>About Me Page</Text>;
+
+// New Component for Project View
+const ProjectView = ({ projectName }) => (
+  <Box p={5}>
+    <Heading as="h2" size="lg" mb={5} color="teal.600">
+      Project: {projectName}
+    </Heading>
+    {/* Add content or functionality for the project here */}
+    <Text>Details and operations for the project go here.</Text>
+  </Box>
+);
 
 class OHome extends React.Component {
   render() {
@@ -41,6 +51,26 @@ class OHome extends React.Component {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/sound" element={<OSound />} />
+                  <Route
+                    path="/sound/supervised/:projectName"
+                    element={
+                      <ProjectView
+                        projectName={
+                          window.location.pathname.split("/").pop() || ""
+                        }
+                      />
+                    }
+                  />
+                  <Route
+                    path="/sound/unsupervised/:projectName"
+                    element={
+                      <ProjectView
+                        projectName={
+                          window.location.pathname.split("/").pop() || ""
+                        }
+                      />
+                    }
+                  />
                   {/* Add more routes as needed */}
                 </Routes>
               </Box>
@@ -69,7 +99,7 @@ class OHome extends React.Component {
                 </Link>
                 <Link to="/sound">
                   <Button colorScheme="teal" variant="outline" mr="4">
-                  Sound
+                    Sound
                   </Button>
                 </Link>
               </Flex>

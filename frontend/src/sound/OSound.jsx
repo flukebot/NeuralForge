@@ -13,20 +13,9 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
-// Import Wails backend methods, but handle potential issues
-let CreateProject;
-let ListProjects;
-
-if (typeof window !== "undefined" && window.require) {
-  try {
-    CreateProject = require("../../wailsjs/go/main/App").CreateProject;
-    ListProjects = require("../../wailsjs/go/main/App").ListProjects;
-  } catch (error) {
-    console.error("Failed to load Wails backend methods:", error);
-  }
-}
-
+import { CreateProject, ListProjects } from "../../wailsjs/go/main/App";
 
 class OSound extends React.Component {
   constructor(props) {
@@ -44,54 +33,60 @@ class OSound extends React.Component {
     this.loadProjects();
   }
 
-  loadProjects = () => {
-    if (this.state.useWails && ListProjects) {
-      ListProjects()
-        .then((projects) => {
-          this.setState({
-            projects: projects.length
-              ? projects.filter((project) => project.startsWith("ns_"))
-              : [],
+  loadProjects = async () => {
+    try {
+      // Attempt to dynamically import and use Wails ListProjects
+      if (this.state.useWails) {
+        const wailsModule = await import("../../wailsjs/go/main/App");
+        const ListProjects = wailsModule.ListProjects;
+
+        ListProjects()
+          .then((projects) => {
+            console.log("Projects loaded using Wails");
+            this.setState({
+              projects: projects.length
+                ? projects.filter((project) => project.startsWith("ns_"))
+                : [],
+            });
+          })
+          .catch((error) => {
+            console.error(
+              "Failed to load projects from Wails, trying Axios:",
+              error
+            );
+            this.loadProjectsWithAxios(); // Fallback to Axios if Wails fails
           });
-        })
-        .catch((error) => {
-          console.error(
-            "Failed to load projects from Wails, trying Axios:",
-            error
-          );
-          this.loadProjectsWithAxios(); // Fallback to Axios if Wails fails
-        });
-    } else {
-      this.loadProjectsWithAxios(); // Directly use Axios if Wails is not available
+      } else {
+        this.loadProjectsWithAxios(); // Directly use Axios if Wails is not available
+      }
+    } catch (error) {
+      console.log("Server mode or Wails module failed to load:", error);
+      this.loadProjectsWithAxios(); // Fallback to Axios if dynamic import fails
     }
   };
 
   loadProjectsWithAxios = async () => {
     const url = `http://${window.location.hostname}:8080/api/list-projects`;
     try {
-        const response = await axios.get(url);
-        
-        if (response.status === 200) {
-            console.log("Projects fetched from server:", response.data);
-            this.setState({
-                projects: response.data.length
-                    ? response.data.filter((project) => project.startsWith("ns_"))
-                    : [],
-            });
-        } else if (response.status === 204) {
-            console.log("No projects found.");
-            this.setState({ projects: [] });
-        } else {
-            console.error("Unexpected response status:", response.status);
-        }
+      const response = await axios.get(url);
+
+      if (response.status === 200) {
+        console.log("Projects fetched from server:", response.data);
+        this.setState({
+          projects: response.data.length
+            ? response.data.filter((project) => project.startsWith("ns_"))
+            : [],
+        });
+      } else if (response.status === 204) {
+        console.log("No projects found.");
+        this.setState({ projects: [] });
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
     } catch (error) {
-        console.error("Failed to load projects using Axios:", error.message);
+      console.error("Failed to load projects using Axios:", error.message);
     }
-};
-
-
-  
-
+  };
 
   handleProjectNameChange = (e) => {
     this.setState({ projectName: e.target.value });
@@ -135,11 +130,6 @@ class OSound extends React.Component {
       .catch((error) => {
         console.error("Failed to create project using Axios:", error);
       });
-  };
-
-  handleProjectSelection = (projectName) => {
-    this.setState({ selectedProject: projectName });
-    this.props.onSelectProject(projectName); // Trigger the parent to load the selected project view
   };
 
   toggleUseWails = () => {
@@ -202,10 +192,15 @@ class OSound extends React.Component {
                   borderRadius="md"
                   p={2}
                   cursor="pointer"
-                  onClick={() => this.handleProjectSelection(project)}
                   _hover={{ bg: "gray.100" }}
                 >
-                  <Text fontSize="md">{project}</Text>
+                  <Link
+                    to={`/sound/${
+                      project.includes("_sup") ? "supervised" : "unsupervised"
+                    }/${project}`}
+                  >
+                    <Text fontSize="md">{project}</Text>
+                  </Link>
                 </ListItem>
               ))
             ) : (
