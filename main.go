@@ -33,16 +33,11 @@ func main() {
 
     // Check if we should run in server mode
     serverMode := os.Getenv("SERVER_MODE")
-    devMode := os.Getenv("DEV_MODE")
+    //devMode := os.Getenv("DEV_MODE")
     if serverMode == "true" {
         fiberApp = fiber.New()
         fmt.Println("Running server mode")
-        if devMode == "true" {
-            
-            go runServerMode(app)
-        } else {
-            runServerMode(app)
-        }
+        runServerMode(app)
     }
 
     runDesktopMode(app)
@@ -97,8 +92,8 @@ func runDesktopMode(app *App) {
         Bind: []interface{}{
             app,
         },
-        StartHidden:       true, // Keep the window hidden on startup
-        HideWindowOnClose: true, // Hide the window instead of closing
+        //StartHidden:       true, // Keep the window hidden on startup
+        //HideWindowOnClose: true, // Hide the window instead of closing
         OnDomReady: func(ctx context.Context) {
             // Logic to execute when the DOM is ready
         },
