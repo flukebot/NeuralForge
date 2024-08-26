@@ -8,3 +8,5 @@ export function CreateProjectFolder():Promise<string>;
 export function Greet(arg1:string):Promise<string>;
 
 export function ListProjects():Promise<Array<string>>;
+
+export function OpenDirectoryDialog():Promise<string>;

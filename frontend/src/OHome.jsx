@@ -11,6 +11,7 @@ const AboutMe = () => <Text>About Me Page</Text>;
 
 // New Component for Project View
 import { useParams } from "react-router-dom";
+import OUnSupSound from "./sound/OUnSupSound";
 
 const ProjectView = () => {
   const { projectName } = useParams();
@@ -68,7 +69,7 @@ class OHome extends React.Component {
                   <Route
                     path="/sound/unsupervised/:projectName"
                     element={
-                      <ProjectView
+                      <OUnSupSound
                         projectName={
                           window.location.pathname.split("/").pop() || ""
                         }
