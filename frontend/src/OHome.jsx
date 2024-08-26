@@ -10,15 +10,19 @@ const Home = () => <Text>Home Page</Text>;
 const AboutMe = () => <Text>About Me Page</Text>;
 
 // New Component for Project View
-const ProjectView = ({ projectName }) => (
-  <Box p={5}>
-    <Heading as="h2" size="lg" mb={5} color="teal.600">
-      Project: {projectName}
-    </Heading>
-    {/* Add content or functionality for the project here */}
-    <Text>Details and operations for the project go here.</Text>
-  </Box>
-);
+import { useParams } from "react-router-dom";
+
+const ProjectView = () => {
+  const { projectName } = useParams();
+  return (
+    <Box p={5}>
+      <Heading as="h2" size="lg" mb={5} color="teal.600">
+        Project: {projectName}
+      </Heading>
+      <Text>Details and operations for the project go here.</Text>
+    </Box>
+  );
+};
 
 class OHome extends React.Component {
   render() {
@@ -37,10 +41,10 @@ class OHome extends React.Component {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundImage: `url(${backgroundImage})`, // Reference the imported image
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
+              //backgroundImage: `url(${backgroundImage})`, // Reference the imported image
+              //backgroundSize: "cover",
+              //backgroundRepeat: "no-repeat",
+              //backgroundPosition: "center",
               zIndex: "-1",
             }}
             bg="rgba(255, 255, 255, 0.2)" // Semi-transparent white background for the glass effect
