@@ -18,4 +18,6 @@ export function ListProjects():Promise<Array<string>>;
 
 export function OpenDirectoryDialog():Promise<string>;
 
+export function ProcessAudioChunksAndSpectrograms(arg1:string):Promise<Array<string>>;
+
 export function SaveSelectedDirectory(arg1:string,arg2:string):Promise<void>;

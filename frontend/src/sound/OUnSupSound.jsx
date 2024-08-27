@@ -27,6 +27,7 @@ import {
   SaveSelectedDirectory,
   GetProjectData,
   ConvertFilesToWAV,
+  ProcessAudioChunksAndSpectrograms, // Add this import
 } from "../../wailsjs/go/main/App";
 
 class OUnSupSound extends React.Component {
@@ -39,6 +40,9 @@ class OUnSupSound extends React.Component {
       errorMessage: "",
       converting: false, // Track conversion status
       conversionMessage: "", // Message for conversion status
+      processing: false, // Track processing status for spectrograms
+      processingMessage: "", // Message for processing status
+      duplicates: [], // Track duplicates
     };
   }
 
@@ -102,6 +106,38 @@ class OUnSupSound extends React.Component {
     }
   };
 
+  handleProcessSpectrograms = async () => {
+    this.setState({
+      processing: true,
+      processingMessage: "Processing chunks and generating spectrograms...",
+    });
+    try {
+      const duplicates = await ProcessAudioChunksAndSpectrograms(
+        this.props.projectName
+      );
+      if (duplicates.length > 0) {
+        console.log("Duplicates found:", duplicates);
+        this.setState({
+          processingMessage: `Processing completed with ${duplicates.length} duplicate(s) found.`,
+          duplicates,
+        });
+      } else {
+        this.setState({
+          processingMessage:
+            "Processing completed successfully. No duplicates found.",
+        });
+      }
+    } catch (error) {
+      this.setState({
+        processingMessage:
+          "Error during processing. Please check the console for details.",
+      });
+      console.error("Error processing spectrograms:", error);
+    } finally {
+      this.setState({ processing: false });
+    }
+  };
+
   render() {
     const { projectName } = this.props;
     const {
@@ -110,6 +146,9 @@ class OUnSupSound extends React.Component {
       errorMessage,
       converting,
       conversionMessage,
+      processing,
+      processingMessage,
+      duplicates,
     } = this.state;
 
     return (
@@ -189,7 +228,7 @@ class OUnSupSound extends React.Component {
                 <h2>
                   <AccordionButton>
                     <Box flex="1" textAlign="left" fontWeight="bold">
-                      3. Auto-Detect Chunks
+                      3. Auto-Detect Chunks & Convert to Spectrograms
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
@@ -197,43 +236,28 @@ class OUnSupSound extends React.Component {
                 <AccordionPanel pb={4}>
                   <VStack spacing={4} align="start">
                     <Text>
-                      Auto-detect and chunk audio based on decibel ratings.
-                      Specify chunking strategy:
+                      Auto-detect chunks by decibel peaks and convert them to
+                      spectrograms:
                     </Text>
-                    <Stack direction="row" spacing={4}>
-                      <Button colorScheme="teal">Chunk by Peaks</Button>
-                      <Button colorScheme="teal">Chunk by Time</Button>
-                    </Stack>
-                    <Text>
-                      Detection and chunking progress will be shown here.
-                    </Text>
+                    <Button
+                      colorScheme="teal"
+                      onClick={this.handleProcessSpectrograms}
+                      disabled={processing}
+                    >
+                      {processing ? "Processing..." : "Start Processing"}
+                    </Button>
+                    {processingMessage && <Text>{processingMessage}</Text>}
+                    {duplicates.length > 0 && (
+                      <Text>
+                        Duplicates found (see console for details):{" "}
+                        {duplicates.join(", ")}
+                      </Text>
+                    )}
                   </VStack>
                 </AccordionPanel>
               </AccordionItem>
 
-              {/* Step 4: Convert to Spectrograms */}
-              <AccordionItem>
-                <h2>
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left" fontWeight="bold">
-                      4. Convert to Spectrograms
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                  <VStack spacing={4} align="start">
-                    <Text>Convert audio chunks to spectrograms:</Text>
-                    <Button colorScheme="teal">Convert to Spectrograms</Button>
-                    <Text>
-                      Spectrogram generation progress or completion will be
-                      shown here.
-                    </Text>
-                  </VStack>
-                </AccordionPanel>
-              </AccordionItem>
-
-              {/* Step 5: Display Clusters */}
+              {/* Step 4: Display Clusters */}
               <AccordionItem>
                 <h2>
                   <AccordionButton>
@@ -261,7 +285,7 @@ class OUnSupSound extends React.Component {
                 </AccordionPanel>
               </AccordionItem>
 
-              {/* Step 6: Create Model */}
+              {/* Step 5: Create Model */}
               <AccordionItem>
                 <h2>
                   <AccordionButton>
