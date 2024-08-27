@@ -189,3 +189,4 @@ func (a *App) GetProjectData(projectName string) (*ProjectData, error) {
 
 	return projectData, nil
 }
+

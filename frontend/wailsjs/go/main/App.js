@@ -30,6 +30,10 @@ export function ListProjects() {
   return window['go']['main']['App']['ListProjects']();
 }
 
+export function LogError(arg1, arg2, arg3) {
+  return window['go']['main']['App']['LogError'](arg1, arg2, arg3);
+}
+
 export function OpenDirectoryDialog() {
   return window['go']['main']['App']['OpenDirectoryDialog']();
 }

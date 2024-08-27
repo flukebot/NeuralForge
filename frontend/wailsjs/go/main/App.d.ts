@@ -16,6 +16,8 @@ export function ListFilesInDirectory(arg1:string):Promise<string>;
 
 export function ListProjects():Promise<Array<string>>;
 
+export function LogError(arg1:string,arg2:Error,arg3:string):Promise<void>;
+
 export function OpenDirectoryDialog():Promise<string>;
 
 export function ProcessAudioChunksAndSpectrograms(arg1:string):Promise<Array<string>>;
