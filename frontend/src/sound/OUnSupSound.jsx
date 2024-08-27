@@ -6,7 +6,6 @@ import {
   Button,
   VStack,
   Text,
-  Input,
   Spinner,
   Alert,
   AlertIcon,
@@ -17,8 +16,7 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-  Divider,
-  Stack,
+  Input,
 } from "@chakra-ui/react";
 
 // Import Wails runtime
@@ -27,7 +25,7 @@ import {
   SaveSelectedDirectory,
   GetProjectData,
   ConvertFilesToWAV,
-  ProcessAudioChunksAndSpectrograms, // Add this import
+  ProcessAudioChunksAndSpectrograms,
 } from "../../wailsjs/go/main/App";
 
 class OUnSupSound extends React.Component {
@@ -70,8 +68,6 @@ class OUnSupSound extends React.Component {
   handleSelectFolder = async () => {
     try {
       const selectedPath = await OpenDirectoryDialog();
-      console.log("Selected Path:", selectedPath);
-
       if (selectedPath) {
         await SaveSelectedDirectory(selectedPath, this.props.projectName);
         this.setState({ selectedFolderPath: selectedPath });
@@ -262,7 +258,7 @@ class OUnSupSound extends React.Component {
                 <h2>
                   <AccordionButton>
                     <Box flex="1" textAlign="left" fontWeight="bold">
-                      5. Display Clusters
+                      4. Display Clusters
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
@@ -290,7 +286,7 @@ class OUnSupSound extends React.Component {
                 <h2>
                   <AccordionButton>
                     <Box flex="1" textAlign="left" fontWeight="bold">
-                      6. Create Model
+                      5. Create Model
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
