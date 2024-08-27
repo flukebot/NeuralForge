@@ -17,3 +17,26 @@ to this in your browser, and you can call your Go code from devtools.
 ## Building
 
 To build a redistributable, production mode package, use `wails build`.
+
+
+# Sound needs ffmpeg
+Linux
+```
+sudo apt update
+sudo apt install ffmpeg
+```
+
+Windows
+On Windows:
+Download the latest FFmpeg build from FFmpeg's official site.
+Extract the downloaded file.
+Add the bin directory (which contains ffmpeg.exe) to your system's PATH. To do this:
+Search for "Environment Variables" in the Windows Start Menu.
+Under "System Properties" -> "Advanced" -> "Environment Variables", find the "Path" variable under "System variables" and click "Edit".
+Add the path to the bin directory of the extracted FFmpeg files.
+Click "OK" to apply the changes.
+
+# Verify Installation:
+```
+ffmpeg -version
+```
