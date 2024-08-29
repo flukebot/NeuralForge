@@ -26,6 +26,7 @@ import {
   GetProjectData,
   ConvertFilesToWAV,
   ProcessAudioChunksAndSpectrograms,
+  CalculateOptimalClusters,
 } from "../../wailsjs/go/main/App";
 
 class OUnSupSound extends React.Component {
@@ -41,6 +42,8 @@ class OUnSupSound extends React.Component {
       processing: false, // Track processing status for spectrograms
       processingMessage: "", // Message for processing status
       duplicates: [], // Track duplicates
+      calculatingClusters: false, // Track cluster calculation status
+      clustersMessage: "", // Message for cluster calculation status
     };
   }
 
@@ -134,6 +137,28 @@ class OUnSupSound extends React.Component {
     }
   };
 
+  handleCalculateClusters = async () => {
+    this.setState({
+      calculatingClusters: true,
+      clustersMessage: "Calculating optimal number of clusters...",
+    });
+    try {
+      const optimalClusters = await CalculateOptimalClusters(
+        this.props.projectName
+      );
+      this.setState({
+        clustersMessage: `Optimal number of clusters: ${optimalClusters}`,
+      });
+    } catch (error) {
+      this.setState({
+        clustersMessage:
+          "Error during cluster calculation. Please check the console for details.",
+      });
+      console.error("Error calculating optimal clusters:", error);
+    } finally {
+      this.setState({ calculatingClusters: false });
+    }
+  };
   render() {
     const { projectName } = this.props;
     const {
@@ -145,6 +170,8 @@ class OUnSupSound extends React.Component {
       processing,
       processingMessage,
       duplicates,
+      calculatingClusters,
+      clustersMessage,
     } = this.state;
 
     return (
@@ -253,12 +280,37 @@ class OUnSupSound extends React.Component {
                 </AccordionPanel>
               </AccordionItem>
 
+              <AccordionItem>
+                <h2>
+                  <AccordionButton>
+                    <Box flex="1" textAlign="left" fontWeight="bold">
+                      4. Calculate Optimal Clusters
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4}>
+                  <VStack spacing={4} align="start">
+                    <Button
+                      colorScheme="teal"
+                      onClick={this.handleCalculateClusters}
+                      disabled={calculatingClusters}
+                    >
+                      {calculatingClusters
+                        ? "Calculating Clusters..."
+                        : "Calculate Optimal Clusters"}
+                    </Button>
+                    {clustersMessage && <Text>{clustersMessage}</Text>}
+                  </VStack>
+                </AccordionPanel>
+              </AccordionItem>
+
               {/* Step 4: Display Clusters */}
               <AccordionItem>
                 <h2>
                   <AccordionButton>
                     <Box flex="1" textAlign="left" fontWeight="bold">
-                      4. Display Clusters
+                      5. Display Clusters
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
@@ -286,7 +338,7 @@ class OUnSupSound extends React.Component {
                 <h2>
                   <AccordionButton>
                     <Box flex="1" textAlign="left" fontWeight="bold">
-                      5. Create Model
+                      6. Create Model
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
